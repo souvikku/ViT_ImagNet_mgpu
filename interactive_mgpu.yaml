@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: pod2-titanp-8gpu-robust-
+  labels:
+    type: interactive
+spec:
+  template:
+    metadata:
+      labels:
+        type: interactive
+      name: pod
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia
+                operator: In
+                values:
+                - titan-p
+      containers:
+      - command:
+        - sleep
+        - infinity
+        env:
+        - name: SHELL
+          value: /bin/bash
+        - name: HOME
+          value: /store
+        envFrom:
+        - configMapRef:
+            name: proxy-config
+        image: amr-registry.caas.intel.com/aipg/kundus-nas:latest
+        imagePullPolicy: Always
+        name: container
+        resources:
+          limits:
+            cpu: 64
+            memory: 200Gi
+            nvidia.com/gpu: 8
+          requests:
+            cpu: 64
+            memory: 200Gi
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /store
+          name: workdisk
+        - mountPath: /datasets
+          name: datasets
+        workingDir: /store
+      hostIPC: true
+      restartPolicy: OnFailure
+      securityContext:
+        fsGroup: 17685
+        runAsUser: 11940233
+      volumes:
+      - name: workdisk
+        persistentVolumeClaim:
+          claimName: workdisk
+      - name: datasets
+        persistentVolumeClaim:
+          claimName: datasets
