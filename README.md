@@ -1,4 +1,4 @@
-# ViT_ImagNet_mgpu
+# ViT_ImageNet_multi-gpu training
 1. change your image and runAsUser number in the .yaml file to create a pod.
 
 2. Use the interactive_vit_mgpu.yaml to create the pod.
